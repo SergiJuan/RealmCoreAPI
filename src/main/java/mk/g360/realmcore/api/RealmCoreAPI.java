@@ -28,4 +28,23 @@ public interface RealmCoreAPI {
         }
         return "unknown";
     }
+
+    /**
+     * Static method to get the API instance directly from the plugin
+     * @return RealmCoreAPI instance or null if plugin not found
+     */
+    static RealmCoreAPI getInstance() {
+        Plugin plugin = Bukkit.getPluginManager().getPlugin("RealmCore");
+        if (plugin instanceof RealmCoreProvider) {
+            return ((RealmCoreProvider) plugin).getAPI();
+        }
+        return null;
+    }
+}
+
+/**
+ * Interface that your main plugin will implement
+ */
+interface RealmCoreProvider {
+    RealmCoreAPI getAPI();
 }
