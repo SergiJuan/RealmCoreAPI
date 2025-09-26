@@ -3,27 +3,34 @@ package mk.g360.realmcore.api;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * Represents a player's Realm.
+ * The Realm is identified only by its name.
+ * Owner and members can be resolved dynamically.
  */
 public class Realm {
     private final String name;
-    private final Player owner;
-    private final Set<Player> members;
+    private final String ownerName; // Store owner as a String
+    private final Set<String> memberNames; // Store members as names
     private final World world;
     private final World netherWorld;
 
-    public Realm(String name, Player owner) {
-        this.name = name;
-        this.owner = owner;
-        this.members = new HashSet<>();
-        this.members.add(owner); // Owner is automatically a member
+    /**
+     * Creates a Realm instance from its name.
+     * Assumes that the owner's name is the same as the realm's name.
+     */
+    public Realm(String ownerName) {
+        this.name = ownerName;
+        this.ownerName = name; // Assuming the owner name is the same as realm name
+        this.memberNames = new HashSet<>();
+        this.memberNames.add(ownerName);
 
-        // Obtener los mundos asociados
+        // Get worlds associated with this realm
         this.world = Bukkit.getWorld("Realms/" + name);
         this.netherWorld = Bukkit.getWorld("Realms_Nether/" + name);
     }
@@ -32,40 +39,49 @@ public class Realm {
         return name;
     }
 
+    /** Returns the owner as Player if online, null otherwise */
     public Player getOwner() {
-        return owner;
+        return Bukkit.getPlayer(ownerName);
     }
 
+    /** Returns all members as Player objects who are currently online */
+    public Set<Player> getMembers() {
+        Set<Player> members = new HashSet<>();
+        for (String memberName : memberNames) {
+            Player player = Bukkit.getPlayer(memberName);
+            if (player != null) members.add(player);
+        }
+        return Collections.unmodifiableSet(members);
+    }
+
+    /** Returns the raw world object */
     public World getWorld() {
         return world;
     }
 
+    /** Returns the raw nether world object */
     public World getNetherWorld() {
         return netherWorld;
     }
 
-    public Set<Player> getMembers() {
-        return Collections.unmodifiableSet(members);
-    }
-
-    /** Adds a member to the Realm */
+    /** Adds a member to the realm */
     public boolean addMember(Player player) {
-        return members.add(player);
+        return memberNames.add(player.getName());
     }
 
-    /** Removes a member from the Realm */
+    /** Removes a member from the realm */
     public boolean removeMember(Player player) {
-        return members.remove(player);
+        return memberNames.remove(player.getName());
     }
 
     /** Checks if a player is a member */
     public boolean isMember(Player player) {
-        return members.contains(player);
+        return memberNames.contains(player.getName());
     }
 
     /** Checks if a player is the owner */
     public boolean isOwner(Player player) {
-        return owner.equals(player);
+        return ownerName.equals(player.getName());
     }
 
     /** Check if realm world exists */
