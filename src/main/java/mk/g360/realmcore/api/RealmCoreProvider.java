@@ -1,5 +1,5 @@
 package mk.g360.realmcore.api;
 
-interface RealmCoreProvider {
+public interface RealmCoreProvider {
     RealmCoreAPI getAPI();
 }
