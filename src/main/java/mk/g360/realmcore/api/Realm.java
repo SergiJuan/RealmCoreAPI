@@ -3,7 +3,7 @@ package mk.g360.realmcore.api;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import java.util.Set;
+import java.util.List;
 
 /** Represents a player's Realm */
 public interface Realm {
@@ -11,15 +11,15 @@ public interface Realm {
 
     Player getOwner();
 
-    Set<Player> getMembers();
+    List<String> getTrusted();
 
     World getWorld();
 
     World getNetherWorld();
 
-    boolean isMember(Player player);
+    boolean isTrusted(String playerName);
 
-    boolean isOwner(Player player);
+    boolean isOwner(String playerName);
 
     boolean exists();
 
